@@ -5,7 +5,8 @@ services:
     ports:
       - "8080:80"
     depends_on:
-      - fluentd
+      fluentd:
+        condition: service_healthy
     logging:
       driver: "fluentd"
       options:
@@ -20,3 +21,8 @@ services:
     ports:
       - "24224:24224"
       - "24224:24224/udp"
+    healthcheck:
+      test: ["CMD", "bash", "-c", "timeout 2 bash -c 'echo > /dev/tcp/localhost/24224'"]
+      interval: 5s
+      retries: 5
+      start_period: 10s
